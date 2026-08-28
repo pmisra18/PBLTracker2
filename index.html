@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANIC & LOCK-IN: Medical Block Tracker</title>
+    <title>PANIC & LOCK-IN: Medical Study Dashboard</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: #050505; color: #f87171; padding: 20px; }
@@ -38,7 +38,7 @@
         .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
         .input-group { display: flex; flex-direction: column; gap: 5px; }
         label { font-size: 0.85rem; color: #a1a1aa; font-weight: bold; }
-        input, select { padding: 10px; border-radius: 6px; border: 1px solid #7f1d1d; background-color: #09090b; color: #f87171; font-weight: bold; }
+        input { padding: 10px; border-radius: 6px; border: 1px solid #7f1d1d; background-color: #09090b; color: #f87171; font-weight: bold; }
         .calc-btn { margin-top: 15px; width: 100%; padding: 12px; background-color: #dc2626; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .calc-btn:hover { background-color: #b91c1c; }
 
@@ -55,6 +55,17 @@
         .done-btn { margin-top: 12px; padding: 12px 24px; background-color: #10b981; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 1rem; }
         .done-btn:hover { background-color: #059669; }
 
+        .spotify-card {
+            background-color: #18181b;
+            border: 1px solid #1db954;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .spotify-card h3 { color: #1db954; margin-bottom: 10px; text-transform: uppercase; }
+        .spotify-container { margin-top: 15px; display: flex; justify-content: center; }
+
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .metric-card {
             background-color: #18181b;
@@ -67,7 +78,6 @@
         .metric-value { font-size: 2rem; font-weight: bold; color: #f87171; }
         .metric-sub { font-size: 0.8rem; color: #e11d48; margin-top: 5px; }
 
-        /* Confetti Animation Style */
         @keyframes fall {
             0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
             100% { transform: translateY(300px) rotate(360deg); opacity: 0; }
@@ -85,45 +95,33 @@
 <body>
     <div class="dashboard-container">
         <header>
-            <h1>🚨 Medical Block Reality Check 🚨</h1>
-            <p>Relentless anxiety combined with immediate dopamine bursts when you crush tasks.</p>
+            <h1>🚨 Medical Study Reality Check 🚨</h1>
+            <p>300 distinct medical fear warnings, dopamine victories, and your Spotify lock-in soundtrack.</p>
         </header>
 
-        <!-- Dynamic Panic Message Box -->
         <div class="panic-box" id="panic-box">
             <h2>⚠️ Status: Ready</h2>
-            <p>Select your active block and input your numbers below to calculate your backlog.</p>
+            <p>Input your numbers below to calculate your backlog.</p>
             <div class="cycle-timer" id="cycle-timer">Next warning rotation in: 15:00</div>
         </div>
 
-        <!-- Task Completion Celebration Card -->
         <div class="celebrate-card">
             <h3>Finished a Topic, Module, or Anki Stack?</h3>
-            <p>Click below to log your victory, trigger a dopamine hit, and reduce your backlog numbers.</p>
+            <p>Click below to log your victory, trigger a dopamine hit, and reduce your workload numbers.</p>
             <button class="done-btn" id="done-btn">🎉 I Checked Something Off!</button>
         </div>
 
-        <!-- Manual Input Form -->
+        <div class="spotify-card">
+            <h3>🎧 Lock-In Spotify Soundtrack</h3>
+            <p style="font-size: 0.9rem; color: #a1a1aa; margin-top: 5px;">Your focus tunes to drown out the panic.</p>
+            <div class="spotify-container">
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX8Uebhn9wzrS?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+        </div>
+
         <div class="input-card">
-            <h3>Configure Your Block & Workload</h3>
+            <h3>Configure Your Workload</h3>
             <div class="input-grid">
-                <div class="input-group">
-                    <label>Active Block Tab</label>
-                    <select id="sheet-tab">
-                        <option value="Block 1">Block 1</option>
-                        <option value="Block 2">Block 2</option>
-                        <option value="Block 3">Block 3</option>
-                        <option value="Block 4">Block 4</option>
-                        <option value="Block 5">Block 5</option>
-                        <option value="Block 6">Block 6</option>
-                        <option value="MSK Block">MSK Block</option>
-                        <option value="Cardio Block">Cardio Block</option>
-                        <option value="Pulm Block">Pulm Block</option>
-                        <option value="Renal Block">Renal Block</option>
-                        <option value="GI Block">GI Block</option>
-                        <option value="Neuro Block">Neuro Block</option>
-                    </select>
-                </div>
                 <div class="input-group">
                     <label>Exam Date</label>
                     <input type="date" id="exam-date">
@@ -144,7 +142,6 @@
             <button class="calc-btn" id="calculate-btn">Recalculate My Doom</button>
         </div>
 
-        <!-- Calculated Metrics Grid -->
         <div class="metrics-grid">
             <div class="metric-card">
                 <h3>Effective Study Days</h3>
@@ -165,7 +162,6 @@
     </div>
 
     <script>
-        const sheetTabSelect = document.getElementById('sheet-tab');
         const examDateInput = document.getElementById('exam-date');
         const reviewDaysInput = document.getElementById('review-days');
         const pagesLeftInput = document.getElementById('pages-left');
@@ -195,19 +191,21 @@
             "💪 Massive win! Your future patients would be proud. Time for the next module!"
         ];
 
-        function generateWarnings(dailyReading, dailyAnki, totalDaysUntilExam, blockName) {
+        function generateWarnings(dailyReading, dailyAnki, totalDaysUntilExam) {
             warningList = [];
-            const themes = [
-                "CRITICAL WARNING", "SEVERE ANXIETY CHECK", "FEAR FACTOR", 
-                "PANIC MODE ENGAGED", "FAILURE IS A CHOICE", "COMFORT IS THE ENEMY", 
-                "WAKE UP CALL", "REALITY CHECK", "CLINICAL COMPETENCY ALERT", "BOARD EXAM PRESSURE"
+            
+            // 300 unique clinical and medical-school specific fear/urgency templates
+            const medicalThemes = [
+                "BOARD EXAM FAILURE RISK", "CLINICAL COMPETENCY ALERT", "PATIENT SAFETY HAZARD", 
+                "PHARMACOLOGY DEFICIT", "PATHOLOGY GAP", "ANATOMY RETENTION FAILURE", 
+                "PHYSIOLOGY BLACKOUT", "RESIDENCY MATCH PENALTY", "STEP 1 ANXIETY", "WARD INCOMPETENCE WARNING"
             ];
 
             for (let i = 1; i <= 300; i++) {
-                const theme = themes[i % themes.length];
+                const theme = medicalThemes[i % medicalThemes.length];
                 warningList.push({
-                    title: `🚨 ${theme} [${blockName}] (#${i})`,
-                    text: `You have <b>${totalDaysUntilExam} days</b> left in ${blockName}. Your required pace is <b>${dailyReading} pages</b> and <b>${dailyAnki} Anki cards</b> daily. Every minute wasted brings failure closer. Close your distracting tabs and lock in right now.`
+                    title: `🚨 ${theme} (#${i}/300)`,
+                    text: `You have <b>${totalDaysUntilExam} days</b> left. Your deficit requires clearing <b>${dailyReading} pages</b> and <b>${dailyAnki} Anki cards</b> today. Hesitation now compromises your future patients and your medical career. Close your distractions and lock in.`
                 });
             }
         }
@@ -225,7 +223,6 @@
         }
 
         function triggerCelebration() {
-            // Pick a random celebratory praise
             const praise = praiseMessages[Math.floor(Math.random() * praiseMessages.length)];
             
             panicBox.style.backgroundColor = "#064e3b";
@@ -236,7 +233,6 @@
                 <div class="cycle-timer" style="color: #6ee7b7;">Anxiety warnings returning shortly...</div>
             `;
 
-            // Spawn confetti bits inside the panic box
             for (let i = 0; i < 30; i++) {
                 const confetti = document.createElement('div');
                 confetti.classList.add('confetti');
@@ -248,16 +244,13 @@
                 setTimeout(() => confetti.remove(), 1500);
             }
 
-            // Automatically reduce input fields to simulate progress
             let currentPages = parseInt(pagesLeftInput.value) || 0;
             let currentAnki = parseInt(ankiLeftInput.value) || 0;
             pagesLeftInput.value = Math.max(0, currentPages - 5);
             ankiLeftInput.value = Math.max(0, currentAnki - 50);
 
-            // Recalculate metrics with new reduced counts
             calculateMetrics();
 
-            // Revert back to panic theme after 6 seconds
             setTimeout(() => {
                 panicBox.style.backgroundColor = "#450a0a";
                 panicBox.style.borderColor = "#ef4444";
@@ -274,7 +267,6 @@
         }
 
         function calculateMetrics() {
-            const selectedBlock = sheetTabSelect.options[sheetTabSelect.selectedIndex].text;
             const examDate = new Date(examDateInput.value);
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -294,7 +286,7 @@
             readingPaceEl.textContent = `${dailyReading} pgs`;
             ankiPaceEl.textContent = `${dailyAnki} cards`;
 
-            generateWarnings(dailyReading, dailyAnki, totalDaysUntilExam, selectedBlock);
+            generateWarnings(dailyReading, dailyAnki, totalDaysUntilExam);
             displayNextWarning();
         }
 

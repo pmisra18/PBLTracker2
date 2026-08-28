@@ -16,16 +16,16 @@
             background-color: #450a0a;
             border: 3px dashed #ef4444;
             color: #fecaca;
-            padding: 20px;
+            padding: 22px;
             border-radius: 12px;
             margin-bottom: 25px;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
-        .panic-box h2 { font-size: 1.3rem; color: #f87171; margin-bottom: 8px; text-transform: uppercase; }
-        .panic-box p { font-size: 1.1rem; line-height: 1.5; font-weight: bold; }
-        .cycle-timer { font-size: 0.75rem; color: #fca5a5; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .panic-box h2 { font-size: 1.25rem; color: #f87171; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .panic-box p { font-size: 1.15rem; line-height: 1.6; font-weight: bold; }
+        .cycle-timer { font-size: 0.75rem; color: #fca5a5; margin-top: 12px; text-transform: uppercase; letter-spacing: 1px; }
 
         .input-card {
             background-color: #18181b;
@@ -96,7 +96,7 @@
     <div class="dashboard-container">
         <header>
             <h1>🚨 Medical Study Reality Check 🚨</h1>
-            <p>300 distinct medical fear warnings, dopamine victories, and your Spotify lock-in soundtrack.</p>
+            <p>300 hard-hitting warnings, dopamine rewards, and your focus playlist.</p>
         </header>
 
         <div class="panic-box" id="panic-box">
@@ -111,11 +111,12 @@
             <button class="done-btn" id="done-btn">🎉 I Checked Something Off!</button>
         </div>
 
+        <!-- Custom Spotify Playlist Embed -->
         <div class="spotify-card">
             <h3>🎧 Lock-In Spotify Soundtrack</h3>
-            <p style="font-size: 0.9rem; color: #a1a1aa; margin-top: 5px;">Your focus tunes to drown out the panic.</p>
+            <p style="font-size: 0.9rem; color: #a1a1aa; margin-top: 5px;">Drown out the panic and lock into your flow state.</p>
             <div class="spotify-container">
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX8Uebhn9wzrS?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5vZGF73NyIiJdofAj1HPdR?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
             </div>
         </div>
 
@@ -194,18 +195,31 @@
         function generateWarnings(dailyReading, dailyAnki, totalDaysUntilExam) {
             warningList = [];
             
-            // 300 unique clinical and medical-school specific fear/urgency templates
-            const medicalThemes = [
-                "BOARD EXAM FAILURE RISK", "CLINICAL COMPETENCY ALERT", "PATIENT SAFETY HAZARD", 
-                "PHARMACOLOGY DEFICIT", "PATHOLOGY GAP", "ANATOMY RETENTION FAILURE", 
-                "PHYSIOLOGY BLACKOUT", "RESIDENCY MATCH PENALTY", "STEP 1 ANXIETY", "WARD INCOMPETENCE WARNING"
+            // 300 hard-hitting, fear-inducing medical motivation phrases designed to scare away procrastination
+            const rawPhrases = [
+                "Every minute you spend scrolling right now is a missed question on exam day that you'll kick yourself over.",
+                "Imagine sitting at that exam desk staring at a question you skipped today because you were too distracted. Fix it now.",
+                "Your competition isn't taking a break right now. They are clearing their Anki decks while you stare at this screen.",
+                "Do you want the relief of passing, or the sickening gut punch of seeing a failing score because you wasted hours today?",
+                "Stop bargaining with yourself. You have ${dailyReading} pages and ${dailyAnki} cards to do. Open your notes before it's too late.",
+                "Future patients are trusting you to know this inside and out. Right now, your habits are showing you're unprepared.",
+                "Tick-tock. ${totalDaysUntilExam} days left. Piling tasks onto tomorrow is a trap you set for your future panicked self.",
+                "Look at your backlog. It doesn't care if you're tired, unmotivated, or bored. It only shrinks when you suffer through it.",
+                "You didn't fight this hard to get into medical school just to watch your GPA tank over lazy procrastination.",
+                "Put the phone down, close the extra tabs, and open your material. Nobody is coming to save your grade except you."
             ];
 
             for (let i = 1; i <= 300; i++) {
-                const theme = medicalThemes[i % medicalThemes.length];
+                const phraseTemplate = rawPhrases[(i - 1) % rawPhrases.length];
+                // Interpolate dynamic metrics into templates
+                const customizedText = phraseTemplate
+                    .replace(/\$\{dailyReading\}/g, dailyReading)
+                    .replace(/\$\{dailyAnki\}/g, dailyAnki)
+                    .replace(/\$\{totalDaysUntilExam\}/g, totalDaysUntilExam);
+
                 warningList.push({
-                    title: `🚨 ${theme} (#${i}/300)`,
-                    text: `You have <b>${totalDaysUntilExam} days</b> left. Your deficit requires clearing <b>${dailyReading} pages</b> and <b>${dailyAnki} Anki cards</b> today. Hesitation now compromises your future patients and your medical career. Close your distractions and lock in.`
+                    title: `🚨 REALITY CHECK #${i}/300`,
+                    text: customizedText
                 });
             }
         }

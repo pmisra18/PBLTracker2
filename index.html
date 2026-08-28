@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANIC & LOCK-IN: PBL Exam One</title>
+    <title>PANIC & LOCK-IN: Medical Block Tracker</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: #050505; color: #f87171; padding: 20px; }
@@ -20,8 +20,10 @@
             border-radius: 12px;
             margin-bottom: 25px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .panic-box h2 { font-size: 1.4rem; color: #f87171; margin-bottom: 8px; text-transform: uppercase; }
+        .panic-box h2 { font-size: 1.3rem; color: #f87171; margin-bottom: 8px; text-transform: uppercase; }
         .panic-box p { font-size: 1.1rem; line-height: 1.5; font-weight: bold; }
         .cycle-timer { font-size: 0.75rem; color: #fca5a5; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -36,9 +38,22 @@
         .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
         .input-group { display: flex; flex-direction: column; gap: 5px; }
         label { font-size: 0.85rem; color: #a1a1aa; font-weight: bold; }
-        input { padding: 10px; border-radius: 6px; border: 1px solid #7f1d1d; background-color: #09090b; color: #f87171; font-weight: bold; }
+        input, select { padding: 10px; border-radius: 6px; border: 1px solid #7f1d1d; background-color: #09090b; color: #f87171; font-weight: bold; }
         .calc-btn { margin-top: 15px; width: 100%; padding: 12px; background-color: #dc2626; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .calc-btn:hover { background-color: #b91c1c; }
+
+        .celebrate-card {
+            background-color: #064e3b;
+            border: 2px solid #10b981;
+            color: #d1fae5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .celebrate-card h3 { color: #34d399; margin-bottom: 10px; text-transform: uppercase; }
+        .done-btn { margin-top: 12px; padding: 12px 24px; background-color: #10b981; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 1rem; }
+        .done-btn:hover { background-color: #059669; }
 
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .metric-card {
@@ -51,26 +66,64 @@
         .metric-card h3 { font-size: 0.85rem; color: #a1a1aa; text-transform: uppercase; margin-bottom: 8px; }
         .metric-value { font-size: 2rem; font-weight: bold; color: #f87171; }
         .metric-sub { font-size: 0.8rem; color: #e11d48; margin-top: 5px; }
+
+        /* Confetti Animation Style */
+        @keyframes fall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(300px) rotate(360deg); opacity: 0; }
+        }
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 14px;
+            background-color: #34d399;
+            animation: fall 1.5s ease-in-out forwards;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
         <header>
-            <h1>🚨 PBL Exam One Reality Check 🚨</h1>
-            <p>Your custom anxiety dashboard. New psychological warnings cycle every 15 minutes.</p>
+            <h1>🚨 Medical Block Reality Check 🚨</h1>
+            <p>Relentless anxiety combined with immediate dopamine bursts when you crush tasks.</p>
         </header>
 
         <!-- Dynamic Panic Message Box -->
         <div class="panic-box" id="panic-box">
             <h2>⚠️ Status: Ready</h2>
-            <p>Enter your metrics below to calculate how severe your backlog is.</p>
+            <p>Select your active block and input your numbers below to calculate your backlog.</p>
             <div class="cycle-timer" id="cycle-timer">Next warning rotation in: 15:00</div>
+        </div>
+
+        <!-- Task Completion Celebration Card -->
+        <div class="celebrate-card">
+            <h3>Finished a Topic, Module, or Anki Stack?</h3>
+            <p>Click below to log your victory, trigger a dopamine hit, and reduce your backlog numbers.</p>
+            <button class="done-btn" id="done-btn">🎉 I Checked Something Off!</button>
         </div>
 
         <!-- Manual Input Form -->
         <div class="input-card">
-            <h3>Configure Your Workload</h3>
+            <h3>Configure Your Block & Workload</h3>
             <div class="input-grid">
+                <div class="input-group">
+                    <label>Active Block Tab</label>
+                    <select id="sheet-tab">
+                        <option value="Block 1">Block 1</option>
+                        <option value="Block 2">Block 2</option>
+                        <option value="Block 3">Block 3</option>
+                        <option value="Block 4">Block 4</option>
+                        <option value="Block 5">Block 5</option>
+                        <option value="Block 6">Block 6</option>
+                        <option value="MSK Block">MSK Block</option>
+                        <option value="Cardio Block">Cardio Block</option>
+                        <option value="Pulm Block">Pulm Block</option>
+                        <option value="Renal Block">Renal Block</option>
+                        <option value="GI Block">GI Block</option>
+                        <option value="Neuro Block">Neuro Block</option>
+                    </select>
+                </div>
                 <div class="input-group">
                     <label>Exam Date</label>
                     <input type="date" id="exam-date">
@@ -112,67 +165,104 @@
     </div>
 
     <script>
+        const sheetTabSelect = document.getElementById('sheet-tab');
         const examDateInput = document.getElementById('exam-date');
         const reviewDaysInput = document.getElementById('review-days');
         const pagesLeftInput = document.getElementById('pages-left');
         const ankiLeftInput = document.getElementById('anki-left');
         const calculateBtn = document.getElementById('calculate-btn');
+        const doneBtn = document.getElementById('done-btn');
 
         const panicBox = document.getElementById('panic-box');
         const daysLeftEl = document.getElementById('days-left');
         const readingPaceEl = document.getElementById('reading-pace');
         const ankiPaceEl = document.getElementById('anki-pace');
 
-        // Set default exam date to 3 weeks from today if empty
         const defaultDate = new Date();
         defaultDate.setDate(defaultDate.getDate() + 21);
         examDateInput.valueAsDate = defaultDate;
 
         let warningList = [];
-        let cycleSecondsLeft = 15 * 60; // 15 minutes in seconds
+        let cycleSecondsLeft = 15 * 60;
         let countdownInterval = null;
+        let rotationInterval = null;
 
-        function generateWarnings(dailyReading, dailyAnki, totalDaysUntilExam) {
-            warningList = [
-                {
-                    title: "🚨 CRITICAL WARNING: TIME IS RUNNING OUT",
-                    text: `You have only <b>${totalDaysUntilExam} days</b> left. Every hour you spend procrastinating guarantees you will drown in material. Your competitors are already reviewing. Open your notes right now.`
-                },
-                {
-                    title: "⚠️ SEVERE ANXIETY CHECK",
-                    text: `If you don't crush <b>${dailyReading} pages</b> and clear <b>${dailyAnki} Anki cards</b> <i>today</i>, your exam score is going to reflect it. Do you really want to fail block one over lack of discipline?`
-                },
-                {
-                    title: "🔥 FEAR FACTOR: TICK-TOCK",
-                    text: `Your future career depends on mastering this exact material, yet here you are looking at a warning screen. Close everything else and lock in immediately!`
-                },
-                {
-                    title: "🛑 PANIC MODE ENGAGED",
-                    text: `You are falling behind schedule. The workload isn't going to shrink itself. Get through your reading pace or prepare to face the consequences on exam day.`
-                },
-                {
-                    title: "💀 FAILURE IS A CHOICE",
-                    text: `And right now, your habits look like you're choosing it. Hit your target quotas of <b>${dailyReading} pgs</b> and <b>${dailyAnki} cards</b> before it's mathematically impossible to catch up.`
-                },
-                {
-                    title: "⚡ COMFORT IS THE ENEMY",
-                    text: `While you're hesitating, blocks of material are piling up. Stop wasting precious minutes and start grinding through your queue right now.`
-                }
+        const praiseMessages = [
+            "🏆 BOOM! One step closer to becoming a licensed physician. Keep that momentum going!",
+            "🔥 LET'S GO! Workload successfully decreased. Don't stop now—feed the streak!",
+            "⚡ Absolute clinical dominance! You crushed that task. Knock out the next one!",
+            "🌟 Incredible work! That's one less thing standing between you and passing exam day.",
+            "💪 Massive win! Your future patients would be proud. Time for the next module!"
+        ];
+
+        function generateWarnings(dailyReading, dailyAnki, totalDaysUntilExam, blockName) {
+            warningList = [];
+            const themes = [
+                "CRITICAL WARNING", "SEVERE ANXIETY CHECK", "FEAR FACTOR", 
+                "PANIC MODE ENGAGED", "FAILURE IS A CHOICE", "COMFORT IS THE ENEMY", 
+                "WAKE UP CALL", "REALITY CHECK", "CLINICAL COMPETENCY ALERT", "BOARD EXAM PRESSURE"
             ];
+
+            for (let i = 1; i <= 300; i++) {
+                const theme = themes[i % themes.length];
+                warningList.push({
+                    title: `🚨 ${theme} [${blockName}] (#${i})`,
+                    text: `You have <b>${totalDaysUntilExam} days</b> left in ${blockName}. Your required pace is <b>${dailyReading} pages</b> and <b>${dailyAnki} Anki cards</b> daily. Every minute wasted brings failure closer. Close your distracting tabs and lock in right now.`
+                });
+            }
         }
 
         function displayNextWarning() {
             if (warningList.length === 0) return;
-            // Pick a random warning from the pool
             const randomMsg = warningList[Math.floor(Math.random() * warningList.length)];
             
-            // Re-render the panic box keeping the countdown timer element intact
             panicBox.innerHTML = `
                 <h2>${randomMsg.title}</h2>
                 <p>${randomMsg.text}</p>
                 <div class="cycle-timer" id="cycle-timer">Next warning rotation in: 15:00</div>
             `;
-            cycleSecondsLeft = 15 * 60; // Reset countdown
+            cycleSecondsLeft = 15 * 60;
+        }
+
+        function triggerCelebration() {
+            // Pick a random celebratory praise
+            const praise = praiseMessages[Math.floor(Math.random() * praiseMessages.length)];
+            
+            panicBox.style.backgroundColor = "#064e3b";
+            panicBox.style.borderColor = "#10b981";
+            panicBox.innerHTML = `
+                <h2>🎉 TASK CRUSHED! 🎉</h2>
+                <p style="color: #d1fae5;">${praise}</p>
+                <div class="cycle-timer" style="color: #6ee7b7;">Anxiety warnings returning shortly...</div>
+            `;
+
+            // Spawn confetti bits inside the panic box
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = ['#34d399', '#60a5fa', '#facc15', '#f43f5e'][Math.floor(Math.random() * 4)];
+                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+                panicBox.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 1500);
+            }
+
+            // Automatically reduce input fields to simulate progress
+            let currentPages = parseInt(pagesLeftInput.value) || 0;
+            let currentAnki = parseInt(ankiLeftInput.value) || 0;
+            pagesLeftInput.value = Math.max(0, currentPages - 5);
+            ankiLeftInput.value = Math.max(0, currentAnki - 50);
+
+            // Recalculate metrics with new reduced counts
+            calculateMetrics();
+
+            // Revert back to panic theme after 6 seconds
+            setTimeout(() => {
+                panicBox.style.backgroundColor = "#450a0a";
+                panicBox.style.borderColor = "#ef4444";
+                displayNextWarning();
+            }, 6000);
         }
 
         function formatTimerDisplay() {
@@ -184,6 +274,7 @@
         }
 
         function calculateMetrics() {
+            const selectedBlock = sheetTabSelect.options[sheetTabSelect.selectedIndex].text;
             const examDate = new Date(examDateInput.value);
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -203,9 +294,8 @@
             readingPaceEl.textContent = `${dailyReading} pgs`;
             ankiPaceEl.textContent = `${dailyAnki} cards`;
 
-            // Populate warning pool based on latest numbers
-            generateWarnings(dailyReading, dailyAnki, totalDaysUntilExam);
-            displayNextWarning(); // Show first warning immediately
+            generateWarnings(dailyReading, dailyAnki, totalDaysUntilExam, selectedBlock);
+            displayNextWarning();
         }
 
         calculateBtn.addEventListener('click', () => {
@@ -213,16 +303,19 @@
             resetIntervals();
         });
 
+        doneBtn.addEventListener('click', () => {
+            triggerCelebration();
+        });
+
         function resetIntervals() {
             clearInterval(countdownInterval);
+            clearInterval(rotationInterval);
             cycleSecondsLeft = 15 * 60;
             
-            // Interval for 15-minute warning rotation (15 * 60 * 1000 ms)
-            setInterval(() => {
+            rotationInterval = setInterval(() => {
                 displayNextWarning();
             }, 15 * 60 * 1000);
 
-            // Interval for ticking down the visual timer every 1 second
             countdownInterval = setInterval(() => {
                 if (cycleSecondsLeft > 0) {
                     cycleSecondsLeft--;
@@ -231,7 +324,6 @@
             }, 1000);
         }
 
-        // Initial run on load
         calculateMetrics();
         resetIntervals();
     </script>

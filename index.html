@@ -9,7 +9,7 @@
         body { background-color: #050505; color: #f87171; padding: 20px; }
         .dashboard-container { max-width: 850px; margin: 0 auto; }
         header { text-align: center; margin-bottom: 25px; border-bottom: 3px solid #dc2626; padding-bottom: 15px; }
-        header h1 { font-size: 2.2rem; color: #ef4444; text-transform: uppercase; letter-spacing: 2px; }
+        header h1 { font-size: 2rem; color: #ef4444; text-transform: uppercase; letter-spacing: 2px; }
         header p { color: #fca5a5; font-weight: bold; margin-top: 5px; }
         
         .panic-box {
@@ -21,10 +21,26 @@
             margin-bottom: 25px;
             text-align: center;
         }
-        .panic-box h2 { font-size: 1.5rem; color: #f87171; margin-bottom: 10px; text-transform: uppercase; }
-        .panic-box p { font-size: 1.15rem; line-height: 1.6; font-weight: bold; }
+        .panic-box h2 { font-size: 1.4rem; color: #f87171; margin-bottom: 8px; text-transform: uppercase; }
+        .panic-box p { font-size: 1.1rem; line-height: 1.5; font-weight: bold; }
+        .cycle-timer { font-size: 0.75rem; color: #fca5a5; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .input-card {
+            background-color: #18181b;
+            border: 1px solid #7f1d1d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .input-card h3 { color: #e4e4e7; margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase; }
+        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 0.85rem; color: #a1a1aa; font-weight: bold; }
+        input { padding: 10px; border-radius: 6px; border: 1px solid #7f1d1d; background-color: #09090b; color: #f87171; font-weight: bold; }
+        .calc-btn { margin-top: 15px; width: 100%; padding: 12px; background-color: #dc2626; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .calc-btn:hover { background-color: #b91c1c; }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .metric-card {
             background-color: #18181b;
             border: 1px solid #7f1d1d;
@@ -32,133 +48,192 @@
             border-radius: 10px;
             text-align: center;
         }
-        .metric-card h3 { font-size: 0.9rem; color: #a1a1aa; text-transform: uppercase; margin-bottom: 8px; }
+        .metric-card h3 { font-size: 0.85rem; color: #a1a1aa; text-transform: uppercase; margin-bottom: 8px; }
         .metric-value { font-size: 2rem; font-weight: bold; color: #f87171; }
-        .metric-sub { font-size: 0.85rem; color: #e11d48; margin-top: 5px; }
-
-        .log-section {
-            background-color: #18181b;
-            border: 1px solid #3f3f46;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .log-section h3 { color: #e4e4e7; margin-bottom: 12px; border-bottom: 1px solid #27272a; padding-bottom: 6px; }
-        #raw-data-preview { font-family: monospace; font-size: 0.8rem; color: #a1a1aa; max-height: 200px; overflow-y: auto; background: #09090b; padding: 10px; border-radius: 6px; }
+        .metric-sub { font-size: 0.8rem; color: #e11d48; margin-top: 5px; }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
         <header>
             <h1>🚨 PBL Exam One Reality Check 🚨</h1>
-            <p>Every second wasted brings failure closer. Open your books.</p>
+            <p>Your custom anxiety dashboard. New psychological warnings cycle every 15 minutes.</p>
         </header>
 
         <!-- Dynamic Panic Message Box -->
         <div class="panic-box" id="panic-box">
-            <h2>⚠️ Status: Assessing Your Deficit...</h2>
-            <p>Analyzing your spreadsheet data to calculate how far behind you are...</p>
+            <h2>⚠️ Status: Ready</h2>
+            <p>Enter your metrics below to calculate how severe your backlog is.</p>
+            <div class="cycle-timer" id="cycle-timer">Next warning rotation in: 15:00</div>
+        </div>
+
+        <!-- Manual Input Form -->
+        <div class="input-card">
+            <h3>Configure Your Workload</h3>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Exam Date</label>
+                    <input type="date" id="exam-date">
+                </div>
+                <div class="input-group">
+                    <label>Review Days Needed</label>
+                    <input type="number" id="review-days" value="3" min="0">
+                </div>
+                <div class="input-group">
+                    <label>Total Pages/Modules Left</label>
+                    <input type="number" id="pages-left" value="150" min="0">
+                </div>
+                <div class="input-group">
+                    <label>Anki Cards Left</label>
+                    <input type="number" id="anki-left" value="800" min="0">
+                </div>
+            </div>
+            <button class="calc-btn" id="calculate-btn">Recalculate My Doom</button>
         </div>
 
         <!-- Calculated Metrics Grid -->
         <div class="metrics-grid">
             <div class="metric-card">
-                <h3>Time Left Until Exam</h3>
+                <h3>Effective Study Days</h3>
                 <div class="metric-value" id="days-left">--</div>
-                <div class="metric-sub">Days remaining</div>
+                <div class="metric-sub">Excluding review buffer</div>
             </div>
             <div class="metric-card">
-                <h3>Daily Reading Target</h3>
+                <h3>Daily Reading Pace</h3>
                 <div class="metric-value" id="reading-pace">--</div>
-                <div class="metric-sub">Pages / Modules per day</div>
-            </div>
-            <div class="metric-card">
-                <h3>Anki Card Debt</h3>
-                <div class="metric-value" id="anki-debt">--</div>
-                <div class="metric-sub">Cards left to clear</div>
+                <div class="metric-sub">Pages per day</div>
             </div>
             <div class="metric-card">
                 <h3>Daily Anki Pace</h3>
                 <div class="metric-value" id="anki-pace">--</div>
-                <div class="metric-sub">Reviews needed daily</div>
+                <div class="metric-sub">Cards per day</div>
             </div>
-        </div>
-
-        <!-- Spreadsheet Raw Status -->
-        <div class="log-section">
-            <h3>Live Tracker Integration Log</h3>
-            <div id="raw-data-preview">Connecting to Google Sheet CSV...</div>
         </div>
     </div>
 
     <script>
-        // ⚠️ PASTE YOUR PUBLISHED GOOGLE SHEET CSV URL HERE:
-        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vStekUSFkRD-8m2_TLcoZPeaamxo0HjMENkIvWJs0JC0iqnTgtPU6YDxu8Ot-l4gSzeho3UTeoZSXRJ/pubhtml";
+        const examDateInput = document.getElementById('exam-date');
+        const reviewDaysInput = document.getElementById('review-days');
+        const pagesLeftInput = document.getElementById('pages-left');
+        const ankiLeftInput = document.getElementById('anki-left');
+        const calculateBtn = document.getElementById('calculate-btn');
 
-        // CONFIGURATION: Adjust your Exam 1 target date here (YYYY, Month Index 0-11, Day)
-        // Example: September 25, 2026 -> new Date(2026, 8, 25)
-        const EXAM_DATE = new Date(2026, 8, 25); 
+        const panicBox = document.getElementById('panic-box');
+        const daysLeftEl = document.getElementById('days-left');
+        const readingPaceEl = document.getElementById('reading-pace');
+        const ankiPaceEl = document.getElementById('anki-pace');
 
-        async function loadTracker() {
-            const panicBox = document.getElementById('panic-box');
-            const daysLeftEl = document.getElementById('days-left');
-            const readingPaceEl = document.getElementById('reading-pace');
-            const ankiDebtEl = document.getElementById('anki-debt');
-            const ankiPaceEl = document.getElementById('anki-pace');
-            const rawPreview = document.getElementById('raw-data-preview');
+        // Set default exam date to 3 weeks from today if empty
+        const defaultDate = new Date();
+        defaultDate.setDate(defaultDate.getDate() + 21);
+        examDateInput.valueAsDate = defaultDate;
 
-            if (CSV_URL.includes("PASTE_PUBLISHED_")) {
-                panicBox.innerHTML = `<h2>🛑 Setup Required</h2><p>You forgot to paste your published CSV link into the code! Go back to GitHub, publish your Google Sheet as a CSV, and paste the URL into the <code>CSV_URL</code> variable.</p>`;
-                return;
-            }
+        let warningList = [];
+        let cycleSecondsLeft = 15 * 60; // 15 minutes in seconds
+        let countdownInterval = null;
 
-            // Calculate days left
-            const today = new Date();
-            const timeDiff = EXAM_DATE - today;
-            const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-            
-            if(daysLeft > 0) {
-                daysLeftEl.textContent = daysLeft;
-            } else {
-                daysLeftEl.textContent = "TODAY";
-            }
-
-            try {
-                const response = await fetch(CSV_URL);
-                const csvText = await response.text();
-                rawPreview.textContent = csvText.substring(0, 500) + "... (Loaded successfully)";
-
-                // Parse CSV rows roughly
-                const rows = csvText.split('\n').map(r => r.split(','));
-                
-                // Simulated emergency metrics parsing (Adjusts based on your sheet urgency)
-                let estimatedPagesLeft = Math.max(150, rows.length * 4); // Estimated workload fallback
-                let estimatedAnkiLeft = Math.max(600, rows.length * 15);
-
-                let dailyReading = daysLeft > 0 ? (estimatedPagesLeft / daysLeft).toFixed(1) : estimatedPagesLeft;
-                let dailyAnki = daysLeft > 0 ? Math.ceil(estimatedAnkiLeft / daysLeft) : estimatedAnkiLeft;
-
-                readingPaceEl.textContent = `${dailyReading} pgs`;
-                ankiDebtEl.textContent = estimatedAnkiLeft;
-                ankiPaceEl.textContent = `${dailyAnki} cards`;
-
-                // High-anxiety psychological pressure messages
-                const anxietyMessages = [
-                    `🚨 <b>CRITICAL WARNING:</b> You have only ${daysLeft} days until Exam One. Every hour you spend procrastinating guarantees you will drown in material. Your competitors are already reviewing. Open your notes right now.`,
-                    `⚠️ <b>ANXIETY CHECK:</b> If you don't crush ${dailyReading} pages and clear ${dailyAnki} Anki cards <i>today</i>, your exam score is going to reflect it. Do you really want to fail PBL block one over lack of discipline?`,
-                    `🔥 <b>FEAR FACTOR:</b> Tick-tock. ${daysLeft} days left. Your future career depends on mastering this exact material, yet here you are looking at a warning screen. Close everything else and lock in immediately!`,
-                    `🛑 <b>PANIC MODE ENGAGED:</b> You are falling behind schedule. The workload isn't going to shrink itself. Get through your reading pace or prepare to face the consequences on exam day.`
-                ];
-
-                const selectedMessage = anxietyMessages[Math.floor(Math.random() * anxietyMessages.length)];
-                panicBox.innerHTML = `<h2>⚠️ Emergency Alert</h2><p>${selectedMessage}</p>`;
-
-            } catch (err) {
-                panicBox.innerHTML = `<h2>❌ Connection Failed</h2><p>Could not read your Google Sheet. Ensure your sheet is published to the web as a CSV and the link is correct.</p>`;
-                rawPreview.textContent = err.toString();
-            }
+        function generateWarnings(dailyReading, dailyAnki, totalDaysUntilExam) {
+            warningList = [
+                {
+                    title: "🚨 CRITICAL WARNING: TIME IS RUNNING OUT",
+                    text: `You have only <b>${totalDaysUntilExam} days</b> left. Every hour you spend procrastinating guarantees you will drown in material. Your competitors are already reviewing. Open your notes right now.`
+                },
+                {
+                    title: "⚠️ SEVERE ANXIETY CHECK",
+                    text: `If you don't crush <b>${dailyReading} pages</b> and clear <b>${dailyAnki} Anki cards</b> <i>today</i>, your exam score is going to reflect it. Do you really want to fail block one over lack of discipline?`
+                },
+                {
+                    title: "🔥 FEAR FACTOR: TICK-TOCK",
+                    text: `Your future career depends on mastering this exact material, yet here you are looking at a warning screen. Close everything else and lock in immediately!`
+                },
+                {
+                    title: "🛑 PANIC MODE ENGAGED",
+                    text: `You are falling behind schedule. The workload isn't going to shrink itself. Get through your reading pace or prepare to face the consequences on exam day.`
+                },
+                {
+                    title: "💀 FAILURE IS A CHOICE",
+                    text: `And right now, your habits look like you're choosing it. Hit your target quotas of <b>${dailyReading} pgs</b> and <b>${dailyAnki} cards</b> before it's mathematically impossible to catch up.`
+                },
+                {
+                    title: "⚡ COMFORT IS THE ENEMY",
+                    text: `While you're hesitating, blocks of material are piling up. Stop wasting precious minutes and start grinding through your queue right now.`
+                }
+            ];
         }
 
-        loadTracker();
+        function displayNextWarning() {
+            if (warningList.length === 0) return;
+            // Pick a random warning from the pool
+            const randomMsg = warningList[Math.floor(Math.random() * warningList.length)];
+            
+            // Re-render the panic box keeping the countdown timer element intact
+            panicBox.innerHTML = `
+                <h2>${randomMsg.title}</h2>
+                <p>${randomMsg.text}</p>
+                <div class="cycle-timer" id="cycle-timer">Next warning rotation in: 15:00</div>
+            `;
+            cycleSecondsLeft = 15 * 60; // Reset countdown
+        }
+
+        function formatTimerDisplay() {
+            const timerEl = document.getElementById('cycle-timer');
+            if (!timerEl) return;
+            let mins = Math.floor(cycleSecondsLeft / 60);
+            let secs = cycleSecondsLeft % 60;
+            timerEl.textContent = `Next warning rotation in: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function calculateMetrics() {
+            const examDate = new Date(examDateInput.value);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const reviewDays = parseInt(reviewDaysInput.value) || 0;
+            const pagesLeft = parseInt(pagesLeftInput.value) || 0;
+            const ankiLeft = parseInt(ankiLeftInput.value) || 0;
+
+            const totalDaysUntilExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+            const effectiveStudyDays = Math.max(1, totalDaysUntilExam - reviewDays);
+
+            daysLeftEl.textContent = effectiveStudyDays;
+
+            const dailyReading = (pagesLeft / effectiveStudyDays).toFixed(1);
+            const dailyAnki = Math.ceil(ankiLeft / effectiveStudyDays);
+
+            readingPaceEl.textContent = `${dailyReading} pgs`;
+            ankiPaceEl.textContent = `${dailyAnki} cards`;
+
+            // Populate warning pool based on latest numbers
+            generateWarnings(dailyReading, dailyAnki, totalDaysUntilExam);
+            displayNextWarning(); // Show first warning immediately
+        }
+
+        calculateBtn.addEventListener('click', () => {
+            calculateMetrics();
+            resetIntervals();
+        });
+
+        function resetIntervals() {
+            clearInterval(countdownInterval);
+            cycleSecondsLeft = 15 * 60;
+            
+            // Interval for 15-minute warning rotation (15 * 60 * 1000 ms)
+            setInterval(() => {
+                displayNextWarning();
+            }, 15 * 60 * 1000);
+
+            // Interval for ticking down the visual timer every 1 second
+            countdownInterval = setInterval(() => {
+                if (cycleSecondsLeft > 0) {
+                    cycleSecondsLeft--;
+                    formatTimerDisplay();
+                }
+            }, 1000);
+        }
+
+        // Initial run on load
+        calculateMetrics();
+        resetIntervals();
     </script>
 </body>
 </html>
